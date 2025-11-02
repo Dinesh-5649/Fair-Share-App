@@ -16,7 +16,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     Context context;
     public static final String DATABASE_NAME = "my_database.db";
-    public static final int DATABASE_VERSION = 7; //
+    public static final int DATABASE_VERSION = 1; //
 
     // TABLE: Users
     public static final String TABLE_USERS = "users";
@@ -199,14 +199,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     }
 
-    // ============================
-    //  DATA RETRIEVAL
-    // ============================
-
-    public Cursor getAllGroups() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_GROUPS, null);
-    }
+    //  Get all the Group Members
 
     public List<String> getMembersByGroup(int groupId) {
         List<String> members = new ArrayList<>();
