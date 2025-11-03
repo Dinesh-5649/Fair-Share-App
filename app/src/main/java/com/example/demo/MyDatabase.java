@@ -16,7 +16,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     Context context;
     public static final String DATABASE_NAME = "my_database.db";
-    public static final int DATABASE_VERSION = 1; //
+    public static final int DATABASE_VERSION = 8; //
 
     // TABLE: Users
     public static final String TABLE_USERS = "users";
@@ -201,8 +201,8 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     //  Get all the Group Members
 
-    public List<String> getMembersByGroup(int groupId) {
-        List<String> members = new ArrayList<>();
+    public ArrayList<String> getMembersByGroup(int groupId) {
+        ArrayList<String> members = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT u." + COLUMN_USERNAME +
@@ -269,8 +269,8 @@ public class MyDatabase extends SQLiteOpenHelper {
         return userId;
     }
     // get the group names in which the user is present
-    public List<String> getGroupsForUser(String username) {
-        List<String> groupList = new ArrayList<>();
+    public ArrayList<String> getGroupsForUser(String username) {
+        ArrayList<String> groupList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Integer userId = getUserIdByUsername(username);
@@ -296,6 +296,21 @@ public class MyDatabase extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return groupList;
+    }
+
+    // Get the group Id by Group name
+    public int getGroupIdByGroupName(String groupName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + COLUMN_GROUP_ID + " FROM " + TABLE_GROUPS + " WHERE " + COLUMN_GROUP_NAME + "=?";
+        Cursor cursor = db.rawQuery(query, new String[]{groupName});
+        int groupId = 0;
+        if (cursor.moveToFirst()) {
+            groupId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_GROUP_ID));
+        }
+        db.close();
+        cursor.close();
+        return groupId;
+
     }
 
 

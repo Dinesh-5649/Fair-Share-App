@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Demo">
         <activity
+            android:name=".AddMembers"
+            android:exported="false" />
+        <activity
+            android:name=".ShowMembers"
+            android:exported="false" />
+        <activity
             android:name=".AddGroups"
             android:exported="false" />
         <activity
