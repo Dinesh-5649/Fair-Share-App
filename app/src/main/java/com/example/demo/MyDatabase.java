@@ -33,7 +33,15 @@ public class MyDatabase extends SQLiteOpenHelper {
     public static final String TABLE_MEMBERS = "members";
     public static final String COLUMN_MEMBER_ID = "member_id";
     public static final String COLUMN_MEMBER_NAME = "member_name";
-    public static final String COLUMN_GROUP_REF_ID = "group_ref_id"; // foreign key
+    public static final String COLUMN_GROUP_REF_ID_FOR_MEMBERS = "group_ref_id"; // foreign key
+
+    public static final String TABLE_MESSAGES = "messages";
+    public static final String COLUMN_MESSAGE_ID = "message_id";
+    public static final String COLUMN_GROUP_REF_ID_FOR_MESSAGE = "group_id";
+    public static final String COLUMN_SENDER_ID = "sender_id";
+    public static final String COLUMN_MESSAGE_TEXT = "message_text";
+    public static final String COLUMN_TIMESTAMP = "timestamp";
+
 
     public MyDatabase(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -56,14 +64,26 @@ public class MyDatabase extends SQLiteOpenHelper {
         // Create Members Table
         String createMembersTable = "CREATE TABLE " + TABLE_MEMBERS + " (" +
                 COLUMN_MEMBER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_GROUP_REF_ID + " INTEGER, " +
+                COLUMN_GROUP_REF_ID_FOR_MEMBERS + " INTEGER, " +
                 COLUMN_USER_ID + " INTEGER, " +
-                "FOREIGN KEY(" + COLUMN_GROUP_REF_ID + ") REFERENCES " + TABLE_GROUPS + "(" + COLUMN_GROUP_ID + ") ON DELETE CASCADE, " +
+                "FOREIGN KEY(" + COLUMN_GROUP_REF_ID_FOR_MEMBERS + ") REFERENCES " + TABLE_GROUPS + "(" + COLUMN_GROUP_ID + ") ON DELETE CASCADE, " +
                 "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ") ON DELETE CASCADE);";
+
+        // Create Message Table
+        String createMessagesTable = "CREATE TABLE " + TABLE_MESSAGES + " (" +
+                COLUMN_MESSAGE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_GROUP_REF_ID_FOR_MESSAGE + " INTEGER, " +
+                COLUMN_SENDER_ID + " INTEGER, " +
+                COLUMN_MESSAGE_TEXT + " TEXT NOT NULL, " +
+                COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                "FOREIGN KEY(" + COLUMN_GROUP_REF_ID_FOR_MESSAGE + ") REFERENCES " + TABLE_GROUPS + "(" + COLUMN_GROUP_ID + ") ON DELETE CASCADE, " +
+                "FOREIGN KEY(" + COLUMN_SENDER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ") ON DELETE CASCADE);";
+
 
         db.execSQL(createUsersTable);
         db.execSQL(createGroupsTable);
         db.execSQL(createMembersTable);
+        db.execSQL(createMessagesTable);
     }
 
     @Override
@@ -150,7 +170,7 @@ public class MyDatabase extends SQLiteOpenHelper {
             Integer userId = getUserIdByUsername(creatorUsername);
             if (userId != null) {
                 ContentValues memberCv = new ContentValues();
-                memberCv.put(COLUMN_GROUP_REF_ID, groupId);
+                memberCv.put(COLUMN_GROUP_REF_ID_FOR_MEMBERS, groupId);
                 memberCv.put(COLUMN_USER_ID, userId);
                 db.insert(TABLE_MEMBERS, null, memberCv);
             }
@@ -175,7 +195,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
           // Check if already a member
           String checkQuery = "SELECT * FROM " + TABLE_MEMBERS +
-                  " WHERE " + COLUMN_GROUP_REF_ID + "=? AND " + COLUMN_USER_ID + "=?";
+                  " WHERE " + COLUMN_GROUP_REF_ID_FOR_MEMBERS + "=? AND " + COLUMN_USER_ID + "=?";
           Cursor cursor = db.rawQuery(checkQuery, new String[]{String.valueOf(groupId), String.valueOf(userId)});
 
           if (cursor.getCount() > 0) {
@@ -188,7 +208,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
           // Add user to group
           ContentValues cv = new ContentValues();
-          cv.put(COLUMN_GROUP_REF_ID, groupId);
+          cv.put(COLUMN_GROUP_REF_ID_FOR_MEMBERS, groupId);
           cv.put(COLUMN_USER_ID, userId);
 
           long result = db.insert(TABLE_MEMBERS, null, cv);
@@ -208,7 +228,7 @@ public class MyDatabase extends SQLiteOpenHelper {
         String query = "SELECT u." + COLUMN_USERNAME +
                 " FROM " + TABLE_MEMBERS + " m" +
                 " JOIN " + TABLE_USERS + " u ON m." + COLUMN_USER_ID + " = u." + COLUMN_USER_ID +
-                " WHERE m." + COLUMN_GROUP_REF_ID + "=?";
+                " WHERE m." + COLUMN_GROUP_REF_ID_FOR_MEMBERS + "=?";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(groupId)});
 
@@ -281,7 +301,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
         String query = "SELECT g." + COLUMN_GROUP_NAME +
                 " FROM " + TABLE_GROUPS + " g" +
-                " JOIN " + TABLE_MEMBERS + " m ON g." + COLUMN_GROUP_ID + " = m." + COLUMN_GROUP_REF_ID +
+                " JOIN " + TABLE_MEMBERS + " m ON g." + COLUMN_GROUP_ID + " = m." + COLUMN_GROUP_REF_ID_FOR_MEMBERS +
                 " WHERE m." + COLUMN_USER_ID + " = ?";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
@@ -312,6 +332,48 @@ public class MyDatabase extends SQLiteOpenHelper {
         return groupId;
 
     }
+    /// ////////////////////////
+    // Send a Message
+
+    public void addMessage(int groupId, int senderId, String messageText) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_GROUP_REF_ID_FOR_MESSAGE, groupId);
+        values.put(COLUMN_SENDER_ID, senderId);
+        values.put(COLUMN_MESSAGE_TEXT, messageText);
+
+        db.insert(TABLE_MESSAGES, null, values);
+        db.close();
+    }
+
+    /// ///  ///
+    // Show all group messages
+    public ArrayList<String> getMessagesByGroup(int groupId) {
+        ArrayList<String> messages = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT u." + COLUMN_USERNAME + ", m." + COLUMN_MESSAGE_TEXT +
+                " FROM " + TABLE_MESSAGES + " m " +
+                " JOIN " + TABLE_USERS + " u ON m." + COLUMN_SENDER_ID + " = u." + COLUMN_USER_ID +
+                " WHERE m." + COLUMN_GROUP_REF_ID_FOR_MESSAGE + " = ?" +
+                " ORDER BY m." + COLUMN_TIMESTAMP + " ASC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(groupId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                String sender = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String text = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_TEXT));
+                messages.add(sender + ": " + text);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return messages;
+    }
+
+
 
 
 }
