@@ -13,9 +13,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class AddGroups extends AppCompatActivity {
-    EditText group_name,group_member;
+    EditText group_name;
 
-    Button bt1,bt2;
+    Button bt1;
     final long[] groupId = {-1};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,26 +27,18 @@ public class AddGroups extends AppCompatActivity {
         String userName = intent.getStringExtra("name");
 
         group_name = findViewById(R.id.et1);
-        group_member = findViewById(R.id.et2);
         bt1 = findViewById(R.id.bt1);
-        bt2 = findViewById(R.id.bt2);
+
 
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MyDatabase my = new MyDatabase(AddGroups.this);
                 groupId[0] = my.addGroup(group_name.getText().toString().trim(),userName);
+                finish();
             }
         });
-        bt2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyDatabase my = new MyDatabase(AddGroups.this);
 
-                my.addMember(group_member.getText().toString().trim(), (int) groupId[0]);
-                group_member.setText("");
-            }
-        });
 
 
     }

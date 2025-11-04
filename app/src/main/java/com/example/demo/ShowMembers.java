@@ -43,10 +43,14 @@ public class ShowMembers extends AppCompatActivity {
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent j = new Intent(ShowMembers.this,AddMembers.class);
-                j.putExtra("groupId",groupId);
-                j.putExtra("groupName",groupName);
-                startActivity(j);
+               try{
+                   Intent j = new Intent(ShowMembers.this,AddMembers.class);
+                   j.putExtra("groupId",groupId);
+                   j.putExtra("groupName",groupName);
+                   startActivity(j);
+               } catch (Exception e) {
+                   System.out.println("DineshError is : "+e);
+               }
             }
         });
 

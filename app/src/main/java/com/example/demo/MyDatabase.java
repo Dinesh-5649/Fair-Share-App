@@ -16,7 +16,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     Context context;
     public static final String DATABASE_NAME = "my_database.db";
-    public static final int DATABASE_VERSION = 8; //
+    public static final int DATABASE_VERSION = 9; //
 
     // TABLE: Users
     public static final String TABLE_USERS = "users";
@@ -227,28 +227,28 @@ public class MyDatabase extends SQLiteOpenHelper {
     //Show all users
 
     // Get all the group name
-    public List<String> getAllUserNames() {
-        List<String> usersList = new ArrayList<>();
+    public ArrayList<String> getAllUserNames() {
+        ArrayList<String> usersList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Define your SQL query
         String query = "SELECT " + COLUMN_USERNAME + " FROM " + TABLE_USERS;
 
-        // Execute the query
         Cursor cursor = db.rawQuery(query, null);
 
-        // Move through the cursor and extract usernames
         if (cursor.moveToFirst()) {
             do {
-                String usernames = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GROUP_NAME));
-                usersList.add(usernames);
+                String username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                usersList.add(username);
             } while (cursor.moveToNext());
         }
+
         cursor.close();
         db.close();
 
         return usersList;
     }
+
+
 
     //  Helper method to find UserID by UserName    //
 
