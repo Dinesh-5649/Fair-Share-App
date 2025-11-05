@@ -9,8 +9,12 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class MyDatabase extends SQLiteOpenHelper {
 
@@ -342,6 +346,12 @@ public class MyDatabase extends SQLiteOpenHelper {
         values.put(COLUMN_GROUP_REF_ID_FOR_MESSAGE, groupId);
         values.put(COLUMN_SENDER_ID, senderId);
         values.put(COLUMN_MESSAGE_TEXT, messageText);
+
+        // Store Indian time
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+        String currentTime = sdf.format(new Date());
+        values.put(COLUMN_TIMESTAMP, currentTime);
 
         db.insert(TABLE_MESSAGES, null, values);
         db.close();
