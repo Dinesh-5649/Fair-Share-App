@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ public class ShowGroups extends AppCompatActivity {
 
     FloatingActionButton button;
     TextView tv;
+    EditText et;
     ListView lv;
     String name;
 
@@ -68,9 +70,10 @@ public class ShowGroups extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String groupName = groups.get(position);
                 int groupId = db.getGroupIdByGroupName(groupName);
-                Intent i = new Intent(ShowGroups.this,ShowMembers.class);
+                Intent i = new Intent(ShowGroups.this,GroupChat.class);
                 i.putExtra("groupId",groupId);
                 i.putExtra("groupName",groupName);
+                i.putExtra("userName",name);
                 startActivity(i);
             }
         });

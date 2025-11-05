@@ -16,7 +16,7 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     Context context;
     public static final String DATABASE_NAME = "my_database.db";
-    public static final int DATABASE_VERSION = 9; //
+    public static final int DATABASE_VERSION = 10; //
 
     // TABLE: Users
     public static final String TABLE_USERS = "users";
@@ -74,10 +74,11 @@ public class MyDatabase extends SQLiteOpenHelper {
                 COLUMN_MESSAGE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_GROUP_REF_ID_FOR_MESSAGE + " INTEGER, " +
                 COLUMN_SENDER_ID + " INTEGER, " +
-                COLUMN_MESSAGE_TEXT + " TEXT NOT NULL, " +
+                COLUMN_MESSAGE_TEXT + " TEXT, " +
                 COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                "FOREIGN KEY(" + COLUMN_GROUP_REF_ID_FOR_MESSAGE + ") REFERENCES " + TABLE_GROUPS + "(" + COLUMN_GROUP_ID + ") ON DELETE CASCADE, " +
-                "FOREIGN KEY(" + COLUMN_SENDER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + ") ON DELETE CASCADE);";
+                "FOREIGN KEY(" + COLUMN_GROUP_REF_ID_FOR_MESSAGE + ") REFERENCES " + TABLE_GROUPS + "(" + COLUMN_GROUP_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_SENDER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "));";
+
 
 
         db.execSQL(createUsersTable);
@@ -348,11 +349,13 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     /// ///  ///
     // Show all group messages
-    public ArrayList<String> getMessagesByGroup(int groupId) {
-        ArrayList<String> messages = new ArrayList<>();
+    public ArrayList<Message> getMessagesByGroup(int groupId) {
+        ArrayList<Message> messages = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT u." + COLUMN_USERNAME + ", m." + COLUMN_MESSAGE_TEXT +
+        String query = "SELECT u." + COLUMN_USERNAME + ", " +
+                "m." + COLUMN_MESSAGE_TEXT + ", " +
+                "m." + COLUMN_TIMESTAMP +
                 " FROM " + TABLE_MESSAGES + " m " +
                 " JOIN " + TABLE_USERS + " u ON m." + COLUMN_SENDER_ID + " = u." + COLUMN_USER_ID +
                 " WHERE m." + COLUMN_GROUP_REF_ID_FOR_MESSAGE + " = ?" +
@@ -364,14 +367,20 @@ public class MyDatabase extends SQLiteOpenHelper {
             do {
                 String sender = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
                 String text = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_TEXT));
-                messages.add(sender + ": " + text);
+                String time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+
+                Message message = new Message(sender, text, time);
+                messages.add(message);
+
             } while (cursor.moveToNext());
         }
 
         cursor.close();
         db.close();
+
         return messages;
     }
+
 
 
 
