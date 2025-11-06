@@ -15,9 +15,16 @@
     <TextView
         android:id="@+id/tvMessage"
         android:textColor="#ED2626"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:layout_marginTop="4dp" />
+        android:text="Message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:inputType="textMultiLine"
+        android:minHeight="48dp"
+        android:singleLine="false"
+        android:ellipsize="none"
+        android:scrollHorizontally="false"
+        android:padding="4dp"  />
 
     <TextView
         android:id="@+id/tvTime"

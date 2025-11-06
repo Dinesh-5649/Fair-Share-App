@@ -57,11 +57,13 @@ public class GroupChat extends AppCompatActivity {
 
         Intent i = getIntent();
         groupName = i.getStringExtra("groupName");
-        senderId = i.getIntExtra("groupId",0);
         senderName = i.getStringExtra("userName");
+        groupId = i.getIntExtra("groupId",0);
+
 
         db = new MyDatabase(this);
-        groupId = db.getUserIdByUsername(senderName);
+        senderId = db.getUserIdByUsername(senderName);
+
 
         chatListView = findViewById(R.id.lv);
         messages = db.getMessagesByGroup(groupId);
