@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:layout_width="match_parent"
+    android:layout_marginStart="30dp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tvSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:layout_gravity="end"
+        android:textColor="#5A5A62"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="371dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="17sp"
+        android:autoLink="none"
+        android:inputType="textMultiLine"
+        android:layout_gravity="end"
+        android:linksClickable="false"
+        android:minHeight="48dp"
+        android:padding="4dp"
+        android:scrollHorizontally="false"
+        android:gravity="end"
+        android:singleLine="false"
+        android:text="Message"
+        android:textColor="@color/green" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:textSize="12sp"
+        android:textColor="#808080"
+        android:text="Time"
+        android:layout_gravity="start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp" />
+
+</LinearLayout>
