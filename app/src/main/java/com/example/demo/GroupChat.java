@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.content.Context;
+import android.widget.TextView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 public class GroupChat extends AppCompatActivity {
 
     ListView chatListView;
+    TextView tv;
     ArrayList<Message> messages;
     EditText et;
     Button bt;
@@ -51,14 +54,17 @@ public class GroupChat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_chat);
         bt = findViewById(R.id.bt);
+        tv = findViewById(R.id.tv);
         fb = findViewById(R.id.fb);
         et = findViewById(R.id.et);
         chatListView = findViewById(R.id.lv);
+        chatListView.setStackFromBottom(true);
 
         Intent i = getIntent();
         groupName = i.getStringExtra("groupName");
         senderName = i.getStringExtra("userName");
         groupId = i.getIntExtra("groupId",0);
+        tv.setText(groupName);
 
 
         db = new MyDatabase(this);
@@ -67,7 +73,7 @@ public class GroupChat extends AppCompatActivity {
 
         chatListView = findViewById(R.id.lv);
         messages = db.getMessagesByGroup(groupId);
-        chatAdapter = new ChatAdapter((Context) this, messages);
+        chatAdapter = new ChatAdapter((Context) this, messages,senderName);
         chatListView.setAdapter(chatAdapter);
 
         bt.setOnClickListener(new View.OnClickListener() {

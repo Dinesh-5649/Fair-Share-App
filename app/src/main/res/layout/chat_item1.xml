@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:padding="8dp"
     android:layout_width="match_parent"
+    android:layout_marginEnd="30dp"
     android:layout_height="wrap_content">
 
     <TextView
@@ -14,17 +15,19 @@
 
     <TextView
         android:id="@+id/tvMessage"
-        android:textColor="#ED2626"
-        android:text="Message"
-        android:layout_width="match_parent"
+        android:layout_width="371dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:gravity="start"
+        android:textSize="17sp"
         android:inputType="textMultiLine"
+        android:linksClickable="false"
         android:minHeight="48dp"
-        android:singleLine="false"
-        android:ellipsize="none"
+        android:padding="4dp"
         android:scrollHorizontally="false"
-        android:padding="4dp"  />
+        android:singleLine="false"
+        android:text="Message"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/tvTime"
